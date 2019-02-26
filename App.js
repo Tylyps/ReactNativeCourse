@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
+import { connect } from 'react-redux';
 
+import { addPlace, deletePlace, selectPlace, deselectPlace } from './src/store/actions/index';
 import InputContainer from './src/components/InputContainer/InputContainer';
 import ListContainer from './src/components/ListContainer/ListContainer';
 import PlaceDetail from './src/components/PlaceDetail/PlaceDetail';
 
-export default class App extends Component {
+class App extends Component {
   state = {
     placeName: '',
-    places: [],
-    selectedPlace: null,
   };
 
   placeNameChangedHandler = val => {
@@ -22,46 +22,28 @@ export default class App extends Component {
     if (this.state.placeName.trim() === "") {
       return;
     }
-
-    this.setState(prevState => ({
-      places: prevState.places.concat({
-        key: `${Math.random()}`,
-        name: prevState.placeName,
-        image: {
-          uri: "https://images.pexels.com/photos/1902785/pexels-photo-1902785.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-        },
-      }),
-      placeName: "",
-    }))
+    this.props.onAddPlace(this.state.placeName)
   };
 
   placeSelectedHandler = key => {
-    this.setState(prevState => ({
-      selectedPlace: prevState.places.find((place) => place.key === key)
-    }));
+    this.props.onSelectPlace(key);
   };
 
-placeDeletedHandler = () => {
-  this.setState(prevState => ({
-    places: prevState.places.filter(
-      place => place.key !== prevState.selectedPlace.key
-    ),
-    selectedPlace: null,
-  }));
-};
+  placeDeletedHandler = () => {
+    this.props.onDeletePlace();
+  };
 
   modalClosedHandler = () => {
-    this.setState({
-      selectedPlace: null,
-    });
+    this.props.onDeselectPlace();
   };
 
   render() {
-    const { places, placeName } = this.state;
+    const { placeName } = this.state;
+    const { places, selectedPlace } = this.props;
     return (
       <View style={styles.container}>
         <PlaceDetail
-          selectedPlace={this.state.selectedPlace}
+          selectedPlace={selectedPlace}
           onModalClose={this.modalClosedHandler}
           onItemDeleted={this.placeDeletedHandler}
         />
@@ -88,3 +70,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
 });
+
+const mapStateToProps = state => ({
+  places: state.places.places,
+  selectedPlace: state.places.selectedPlace,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onAddPlace: (name) => dispatch(addPlace(name)),
+  onDeletePlace: () => dispatch(deletePlace()),
+  onSelectPlace: (key) => dispatch(selectPlace(key)),
+  onDeselectPlace: () => dispatch(deselectPlace()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
