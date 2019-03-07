@@ -4,11 +4,11 @@ import { FlatList, StyleSheet } from 'react-native';
 import ListItem from '../ListItem/ListItem';
 
 
-const listContainer = (props) => {
+const PlaceList = (props) => {
 
   return (
     <FlatList
-      style={styles.listContainer}
+      style={styles.PlaceList}
       data={props.places}
       renderItem={info => (
         <ListItem
@@ -22,9 +22,9 @@ const listContainer = (props) => {
 };
 
 const styles = StyleSheet.create({
-  listContainer: {
+  PlaceList: {
     width: "100%",
   }
 });
 
-export default listContainer;
+export default PlaceList;

@@ -3,8 +3,8 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { connect } from 'react-redux';
 
 import { addPlace, deletePlace, selectPlace, deselectPlace } from './src/store/actions/index';
-import InputContainer from './src/components/InputContainer/InputContainer';
-import ListContainer from './src/components/ListContainer/ListContainer';
+import PlaceInput from './src/components/PlaceInput/PlaceInput';
+import PlaceList from './src/components/PlaceList/PlaceList';
 import PlaceDetail from './src/components/PlaceDetail/PlaceDetail';
 
 class App extends Component {
@@ -47,12 +47,12 @@ class App extends Component {
           onModalClose={this.modalClosedHandler}
           onItemDeleted={this.placeDeletedHandler}
         />
-        <InputContainer
+        <PlaceInput
           placeName={placeName}
           onChangeText={this.placeNameChangedHandler}
           onPress={this.placeSubmitHandler}
         />
-        <ListContainer
+        <PlaceList
           places={places}
           onItemSelected={this.placeSelectedHandler}
         />
