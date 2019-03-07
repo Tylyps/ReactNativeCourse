@@ -2,6 +2,7 @@ import { Navigation } from 'react-native-navigation';
 import { Provider } from "react-redux";
 
 import AuthScreen from './src/screens/Auth/Auth';
+import SideDrawer from './src/screens/SideDrawer/SideDrawer';
 import SharePlaceScreen from './src/screens/SharePlace/SharePlace';
 import FindPlaceScreen from './src/screens/FindPlace/FindPlace';
 import PlaceDetailScreen from './src/screens/PlaceDetail/PlaceDetail';
@@ -13,6 +14,8 @@ const store = configureStore();
 // Register Screens
 
 Navigation.registerComponent("awsome-places.AuthScreen", () => AuthScreen, store, Provider);
+
+Navigation.registerComponent("awsome-places.SideDrawer", () => SideDrawer);
 
 Navigation.registerComponent("awsome-places.SharePlaceScreen", () => SharePlaceScreen, store, Provider);
 Navigation.registerComponent("awsome-places.FindPlaceScreen", () => FindPlaceScreen, store, Provider);
