@@ -6,11 +6,22 @@ import PlaceList from '../../components/PlaceList/PlaceList';
 
 class FindPlaceScreen extends Component {
 
+  itemSelectedHandler = key => {
+    const selectedPlace = this.props.places.find(place => place.key === key);
+    this.props.navigator.push({
+      screen: "awsome-places.PlaceDetailScreen",
+      title: selectedPlace.name,
+      passProps: {
+        selectedPlace,
+      },
+    });
+  }
+
   render () {
     const { places } = this.props;
     return (
       <View>
-        <PlaceList places={places}/>
+        <PlaceList places={places} onItemSelected={this.itemSelectedHandler}/>
       </View>
     );
   }
