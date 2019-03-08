@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Image, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Image, Text, Button, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -27,10 +27,10 @@ class PlaceDetail extends Component{
            </View>
          ) : null}
        <View>
-         <Button title="Delete" onPress={this.placeDeletedHandler} color="red" />
          <TouchableOpacity onPress={this.placeDeletedHandler}>
            <View style={styles.deleteButton}>
-             <Icon size={30} name="ios-trash" color="red" />
+              <Text style={styles.deleteText}>Delete</Text>
+             <Icon size={30} name={Platform.OS === 'android' ? "md-trash" : "ios-trash"} color="white" />
            </View>
          </TouchableOpacity>
        </View>
@@ -53,7 +53,16 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   deleteButton: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "red",
+  },
+  deleteText: {
+    color: "white",
+    fontWeight: "400",
+    fontSize: 20,
+    marginRight: 15,
   }
 });
 
