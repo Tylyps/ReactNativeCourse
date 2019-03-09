@@ -4,14 +4,33 @@ import { View, Text, Dimensions, StyleSheet, TouchableOpacity, Platform } from '
 
 
 class SideDrawer extends Component {
+  state = {
+    width: Dimensions.get("window").width * 0.8,
+  };
+
+  constructor(props) {
+    super(props);
+    Dimensions.addEventListener("change", this.updateStyles);
+  };
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener("change", this.updateStyles);
+  }
+
+  updateStyles = dims => {
+    this.setState({
+      width: dims.window.width * 0.8,
+    });
+  }
 
   render() {
+    const { width } = this.state;
 
     return (
       <View
         style={[
           styles.container,
-          { width: Dimensions.get("window").width * 0.8 },
+          { width },
         ]}
       >
         <TouchableOpacity>
