@@ -12,43 +12,33 @@ import MainText from "../../components/UI/MainText";
 
 class AuthScreen extends Component {
   state = {
-    style: {
-      passwordContainer: {
-        flexDirection: Dimensions.get('window').height > 500 ? "column" : "row",
-        justifyContent: "space-between",
-      },
-      passwordWrapper: {
-        width: Dimensions.get('window').height > 500 ? "100%" : "45%",
-      }
-    },
+    viewMode: Dimensions.get('window').height > 500 ? "portrait" : "landscape",
   };
 
   constructor(props) {
     super(props);
-    Dimensions.addEventListener("change", dims => {
-      this.setState({
-        style: {
-          passwordContainer: {
-            flexDirection: Dimensions.get('window').height > 500 ? "column" : "row",
-            justifyContent: "space-between",
-          },
-          passwordWrapper: {
-            width: Dimensions.get('window').height > 500 ? "100%" : "45%",
-          }
-        }
-      })
-
-    });
+    Dimensions.addEventListener("change", this.updateStyles);
   };
+
+  componentWillUnmount() {
+    Dimensions.removeEventListener("change", this.updateStyles);
+  }
+
+  updateStyles = dims => {
+    this.setState({
+      viewMode: dims.window.height > 500 ? "portrait" : "landscape",
+    });
+
+  }
 
   loginHandler = () => {
     startMainTabs();
   }
 
   render () {
-    const { style } = this.state;
+    const { viewMode } = this.state;
     let headingText = null;
-    if (Dimensions.get('window').height > 500) {
+    if (viewMode === 'portrait') {
       headingText = (
         <MainText>
           <HeadingText>Please Log In</HeadingText>
@@ -66,11 +56,11 @@ class AuthScreen extends Component {
           <ButtonWithBackground color="#29aaf4" onPress={() => alert("Hello")}>Switch to Login</ButtonWithBackground>
           <View style={styles.inputContainer}>
             <DefaultInput placeholder="Your E-Mail Address" style={styles.input} />
-            <View style={style.passwordContainer}>
-              <View style={style.passwordWrapper}>
+            <View style={viewMode === 'portrait' ? styles.portraitPasswordContainer : styles.landscapePasswordContainer}>
+              <View style={viewMode === 'portrait' ? styles.portraitPasswordWrapper : styles.landscapePasswordWrapper}>
                 <DefaultInput placeholder="Password" style={styles.input} />
               </View>
-              <View style={style.passwordWrapper}>
+              <View style={viewMode === 'portrait' ? styles.portraitPasswordWrapper : styles.landscapePasswordWrapper}>
                 <DefaultInput placeholder="Confirm Password" style={styles.input} />
               </View>
             </View>
@@ -101,6 +91,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     borderColor: '#bbb',
   },
+  landscapePasswordContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  portraitPasswordContainer: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+  },
+  landscapePasswordWrapper: {
+    width: "45%",
+  },
+  portraitPasswordWrapper: {
+    width: "100%",
+  }
 });
 
 export default AuthScreen;
