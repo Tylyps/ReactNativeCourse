@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Image, Text, Button, StyleSheet, TouchableOpacity, Platform, Dimensions } from 'react-native';
+import MapView from 'react-native-maps';
 import { connect } from 'react-redux';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -32,18 +33,41 @@ class PlaceDetail extends Component{
 
   render() {
     const { viewMode } = this.state;
+    const { selectedPlace } = this.props;
+    const placeLocation = {
+      latitude: selectedPlace.location.latitude,
+      longitude: selectedPlace.location.longitude,
+      latitudeDelta: 0.0122,
+      longitudeDelta:
+        Dimensions.get('window').width /
+        Dimensions.get('window').height *
+        0.0122,
+    };
+
     return (
      <View style={[styles.container, viewMode === "portrait" ? styles.portraitContainer : styles.landscapeContainer ]}>
-      <View style={styles.subContainer}>
-        <Image
-          source={this.props.selectedPlace.image}
-          style={styles.placeImage}
-        />
+      <View style={styles.placeDetailContainer}>
+        <View style={styles.subContainer}>
+          <Image
+            source={selectedPlace.image}
+            style={styles.placeImage}
+          />
+        </View>
+        <View style={styles.subContainer}>
+          <MapView
+            initialRegion={placeLocation}
+            style={styles.map}
+            zoomEnabled={false}
+            scrollEnabled={false}
+          >
+            <MapView.Marker coordinate={selectedPlace.location} />
+          </MapView>
+        </View>
       </View>
       <View style={styles.subContainer}>
         <View>
           <Text style={styles.placeName}>
-            {this.props.selectedPlace.name}
+            {selectedPlace.name}
           </Text>
         </View>
         <View>
@@ -66,15 +90,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   portraitContainer: {
-    flexDirection: "column"
+    flexDirection: "column",
   },
   landscapeContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
+  placeDetailContainer: {
+    flex: 2,
+  },
   placeImage: {
     width: "100%",
-    height: 200,
+    height: "100%",
+  },
+  map: {
+    ...StyleSheet.absoluteFillObject,
   },
   placeName: {
     fontWeight: "bold",
@@ -95,6 +125,7 @@ const styles = StyleSheet.create({
   },
   subContainer: {
     flex: 1,
+    marginBottom: 5,
   },
 });
 

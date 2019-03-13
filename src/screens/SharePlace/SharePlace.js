@@ -30,6 +30,10 @@ class SharePlaceScreen extends Component {
             notEmpty: true
           },
         },
+        location: {
+          value: null,
+          valid: false,
+        }
       },
     };
   };
@@ -59,15 +63,26 @@ class SharePlaceScreen extends Component {
     }));
   };
 
-  placeAddedHandler = () => {
-    const { controls: { placeName } } = this.state;
+  locationPickedHandler = location => {
+    this.setState(prevState => ({
+      controls: {
+        ...prevState.controls,
+        location: {
+          value: location,
+          valid: true,
+        }
+      }
+    }));
+  }
 
-    this.props.onAddPlace(placeName.value);
+  placeAddedHandler = () => {
+    const { controls: { placeName, location } } = this.state;
+
+    this.props.onAddPlace(placeName.value, location.value);
   };
 
   render () {
     const { controls } = this.state;
-    console.log(this.state);
     return (
       <ScrollView>
         <View style={styles.container}>
@@ -75,7 +90,7 @@ class SharePlaceScreen extends Component {
             <HeadingText>Share a Place with us!</HeadingText>
           </MainText>
           <PickImage />
-          <PickLocation />
+          <PickLocation onLocationPick={this.locationPickedHandler} />
           <PlaceInput
             onChangeText={this.placeNameChangedHandler}
             placeData={controls.placeName}
@@ -84,7 +99,7 @@ class SharePlaceScreen extends Component {
           />
           <View style={styles.button}>
             <Button
-             disabled={!controls.placeName.valid}
+             disabled={!controls.placeName.valid || !controls.location.valid}
              title="Share the Place!"
              onPress={this.placeAddedHandler}
             />
@@ -117,7 +132,7 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onAddPlace: (placeName) => dispatch(addPlace(placeName))
+  onAddPlace: (placeName, location) => dispatch(addPlace(placeName, location))
 });
 
 export default connect(null, mapDispatchToProps)(SharePlaceScreen);
