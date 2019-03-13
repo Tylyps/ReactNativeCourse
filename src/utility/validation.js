@@ -4,13 +4,16 @@ const validate = (val, rules, connectedValue) => {
     switch (rule) {
       case 'isEmail':
         isValid = isValid && emailValidator(val);
-      break;
+        break;
       case 'minLength':
         isValid = isValid && minLengthValidator(val, rules[rule]);
-      break;
+        break;
       case 'equalTo':
         isValid = isValid && equalToValidator(val, connectedValue[rule]);
-      break;
+        break;
+      case 'notEmpty':
+        isValid = isValid && notEmptyValidator(val);
+        break;
       default:
         isValid = true;
     };
@@ -29,5 +32,7 @@ const minLengthValidator = (val, minLength) => {
 const equalToValidator = (val, checkValue) => {
   return val === checkValue;
 };
+
+const notEmptyValidator = val => (val.trim() !== '');
 
 export default validate;

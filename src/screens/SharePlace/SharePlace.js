@@ -9,6 +9,7 @@ import MainText from '../../components/UI/MainText';
 import HeadingText from '../../components/UI/HeadingText';
 import PickImage from '../../components/PickImage/PickImage';
 import PickLocation from '../../components/PickLocation/PickLocation';
+import validate from '../../utility/validation';
 
 
 class SharePlaceScreen extends Component {
@@ -20,8 +21,17 @@ class SharePlaceScreen extends Component {
     super(props);
     props.navigator.setOnNavigatorEvent(this.onNavigatorEvent);
     this.state = {
-      placeName: '',
-    }
+      controls: {
+        placeName: {
+          value: '',
+          valid: false,
+          touched: false,
+          validationRules: {
+            notEmpty: true
+          },
+        },
+      },
+    };
   };
 
   onNavigatorEvent = event => {
@@ -36,25 +46,28 @@ class SharePlaceScreen extends Component {
   };
 
   placeNameChangedHandler = val => {
-    this.setState({
-      placeName: val
-    });
+    this.setState( prevState => ({
+      controls: {
+        ...prevState.controls,
+        placeName: {
+          ...prevState.controls.placeName,
+          value: val,
+          valid: validate(val, prevState.controls.placeName.validationRules ),
+          touched: true,
+        },
+      },
+    }));
   };
 
   placeAddedHandler = () => {
-    const { placeName } = this.state;
+    const { controls: { placeName } } = this.state;
 
-    if (placeName.trim() !== "") {
-      this.props.onAddPlace(placeName);
-      this.setState({
-        placeName: '',
-      });
-    }
-
+    this.props.onAddPlace(placeName.value);
   };
 
   render () {
-    const { placeName } = this.state;
+    const { controls } = this.state;
+    console.log(this.state);
     return (
       <ScrollView>
         <View style={styles.container}>
@@ -65,10 +78,16 @@ class SharePlaceScreen extends Component {
           <PickLocation />
           <PlaceInput
             onChangeText={this.placeNameChangedHandler}
-            placeName={placeName}
+            placeData={controls.placeName}
+            autoCapitalize="none"
+            autoCorrect={false}
           />
           <View style={styles.button}>
-            <Button title="Share the Place!" onPress={this.placeAddedHandler} />
+            <Button
+             disabled={!controls.placeName.valid}
+             title="Share the Place!"
+             onPress={this.placeAddedHandler}
+            />
           </View>
         </View>
       </ScrollView>

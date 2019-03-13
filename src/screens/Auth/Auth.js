@@ -141,7 +141,9 @@ class AuthScreen extends Component {
           style={styles.container}
           behavior="padding"
         >
+          <TouchableWithoutFeedback onPress={this.loginHandler}>
           {headingText}
+          </TouchableWithoutFeedback>
           <ButtonWithBackground
             color="#29aaf4"
             onPress={this.switchAuthModeHandler}
