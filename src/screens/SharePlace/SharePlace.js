@@ -33,6 +33,10 @@ class SharePlaceScreen extends Component {
         location: {
           value: null,
           valid: false,
+        },
+        image: {
+          value: null,
+          valid: false,
         }
       },
     };
@@ -75,10 +79,22 @@ class SharePlaceScreen extends Component {
     }));
   }
 
-  placeAddedHandler = () => {
-    const { controls: { placeName, location } } = this.state;
+  imagePickedHandler = image => {
+    this.setState(prevState => ({
+      controls: {
+        ...prevState.controls,
+        image: {
+          value: image,
+          valid: true,
+        }
+      }
+    }))
+  }
 
-    this.props.onAddPlace(placeName.value, location.value);
+  placeAddedHandler = () => {
+    const { controls: { placeName, location, image } } = this.state;
+
+    this.props.onAddPlace(placeName.value, location.value, image.value);
   };
 
   render () {
@@ -89,7 +105,7 @@ class SharePlaceScreen extends Component {
           <MainText>
             <HeadingText>Share a Place with us!</HeadingText>
           </MainText>
-          <PickImage />
+          <PickImage onImagePicked={this.imagePickedHandler} />
           <PickLocation onLocationPick={this.locationPickedHandler} />
           <PlaceInput
             onChangeText={this.placeNameChangedHandler}
@@ -99,7 +115,7 @@ class SharePlaceScreen extends Component {
           />
           <View style={styles.button}>
             <Button
-             disabled={!controls.placeName.valid || !controls.location.valid}
+             disabled={!controls.placeName.valid || !controls.location.valid || !controls.image.valid}
              title="Share the Place!"
              onPress={this.placeAddedHandler}
             />
@@ -132,7 +148,7 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onAddPlace: (placeName, location) => dispatch(addPlace(placeName, location))
+  onAddPlace: (placeName, location, image) => dispatch(addPlace(placeName, location, image))
 });
 
 export default connect(null, mapDispatchToProps)(SharePlaceScreen);
