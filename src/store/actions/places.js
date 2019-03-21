@@ -44,11 +44,11 @@ export const addPlace = (placeName, location, image) => {
 export const getPlaces = () => {
   return dispatch => {
     dispatch(authGetToken())
-      .then(token => {
-        return fetch("https://rn-course-1552502528388.firebaseio.com/places.json?auth=" + token)
-      })
       .catch(() => {
         alert("No valid token found!");
+      })
+      .then(token => {
+        return fetch("https://rn-course-1552502528388.firebaseio.com/places.json?auth=" + token)
       })
       .then(res => res.json())
       .then(parsedRes => {
@@ -78,19 +78,25 @@ export const setPlaces = places => ({
 
 export const deletePlace = key => {
   return (dispatch, getState) => {
-    dispatch(removePlace(key));
-    const token = getState().auth.token;
-    fetch(`https://rn-course-1552502528388.firebaseio.com/places/${key}.json`, {
-      method: "DELETE",
-    })
-    .then(res => res.json())
-    .then(parsedRes => {
-      console.log("Done!");
-    })
-    .catch(err => {
-      console.log(err);
-      alert("Something went wrong, sorry :/");
-    });
+    dispatch(authGetToken())
+      .catch(() => {
+        alert("No valid token found!");
+      })
+      .then(token => {
+        dispatch(removePlace(key));
+        return fetch(`https://rn-course-1552502528388.firebaseio.com/places/${key}.json?auth=${token}`, {
+          method: "DELETE",
+        })
+
+      })
+      .then(res => res.json())
+      .then(parsedRes => {
+        console.log("Done!");
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong, sorry :/");
+      });
   }
 };
 
