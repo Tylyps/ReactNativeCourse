@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux';
 
-import { tryAuth } from '../../store/actions/index';
+import { tryAuth, authAutoSignIn } from '../../store/actions/index';
 import backgroundImage from '../../assets/background.jpg';
 import startMainTabs from '../MainTabs/startMainTabs';
 import ButtonWithBackground from "../../components/UI/ButtonWithBackground";
@@ -57,6 +57,10 @@ class AuthScreen extends Component {
   constructor(props) {
     super(props);
     Dimensions.addEventListener("change", this.updateStyles);
+  };
+
+  componentDidMount() {
+    this.props.onAutoSignIn();
   };
 
   componentWillUnmount() {
@@ -268,6 +272,7 @@ const styles = StyleSheet.create({
 
 const mapDispatchToProps = dispatch => ({
   onTryAuth: (authdata, authMode) => dispatch(tryAuth(authdata, authMode)),
+  onAutoSignIn: () => dispatch(authAutoSignIn()),
 });
 
 const mapStateToProps = state => ({
