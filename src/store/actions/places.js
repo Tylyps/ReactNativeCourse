@@ -3,41 +3,51 @@ import { uiStartLoading, uiStopLoading, authGetToken } from './index';
 
 export const addPlace = (placeName, location, image) => {
   return dispatch => {
+    let authToken;
     dispatch(uiStartLoading());
-    fetch("https://us-central1-rn-course-1552502528388.cloudfunctions.net/storeImage", {
-      method: "POST",
-      body: JSON.stringify({
-        image: image.base64
+    dispatch(authGetToken())
+      .catch(() => {
+        alert("No valid token found!");
       })
-    })
-    .catch(err => {
-      console.log(err);
-      alert("Something went wrong, please try again!");
-      dispatch(uiStopLoading());
-    })
-    .then(res => res.json())
-    .then(parsedRes => {
-      const placeData = {
-        name: placeName,
-        location,
-        image: parsedRes.imageUrl
-      };
-      return fetch("https://rn-course-1552502528388.firebaseio.com/places.json", {
-        method: "POST",
-        body: JSON.stringify(placeData)
+      .then(token => {
+        authToken = token;
+        return fetch("https://us-central1-rn-course-1552502528388.cloudfunctions.net/storeImage", {
+          method: "POST",
+          body: JSON.stringify({
+            image: image.base64
+          }),
+          headers: {
+            "Authorization": "Bearer " + authToken
+          }
+        })
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong, please try again!");
+        dispatch(uiStopLoading());
+      })
+      .then(res => res.json())
+      .then(parsedRes => {
+        const placeData = {
+          name: placeName,
+          location,
+          image: parsedRes.imageUrl
+        };
+        return fetch("https://rn-course-1552502528388.firebaseio.com/places.json?auth=" + authToken, {
+          method: "POST",
+          body: JSON.stringify(placeData)
+        });
+      })
+      .then(res => res.json())
+      .then(parsedRes => {
+        alert("Added a place ;)");
+        dispatch(uiStopLoading());
+      })
+      .catch(err => {
+        console.log(err);
+        alert("Something went wrong, please try again!");
+        dispatch(uiStopLoading());
       });
-    })
-    .then(res => res.json())
-    .then(parsedRes => {
-      alert("Added a place ;)");
-      dispatch(uiStopLoading());
-    })
-    .catch(err => {
-      console.log(err);
-      alert("Something went wrong, please try again!");
-      dispatch(uiStopLoading());
-    });
-
   };
 };
 
