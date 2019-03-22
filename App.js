@@ -15,7 +15,7 @@ const store = configureStore();
 
 Navigation.registerComponent("awsome-places.AuthScreen", () => AuthScreen, store, Provider);
 
-Navigation.registerComponent("awsome-places.SideDrawer", () => SideDrawer);
+Navigation.registerComponent("awsome-places.SideDrawer", () => SideDrawer, store, Provider);
 
 Navigation.registerComponent("awsome-places.SharePlaceScreen", () => SharePlaceScreen, store, Provider);
 Navigation.registerComponent("awsome-places.FindPlaceScreen", () => FindPlaceScreen, store, Provider);
@@ -23,7 +23,7 @@ Navigation.registerComponent("awsome-places.FindPlaceScreen", () => FindPlaceScr
 Navigation.registerComponent("awsome-places.PlaceDetailScreen", () => PlaceDetailScreen, store, Provider);
 
 // Start a App
-Navigation.startSingleScreenApp({
+export default () => Navigation.startSingleScreenApp({
   screen: {
     screen: "awsome-places.AuthScreen",
     title: "Login"

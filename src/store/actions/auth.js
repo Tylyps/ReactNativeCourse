@@ -1,8 +1,9 @@
 import { AsyncStorage } from 'react-native';
 
-import { TRY_AUTH, AUTH_SET_TOKEN } from './actionTypes';
+import { TRY_AUTH, AUTH_SET_TOKEN, AUTH_REMOVE_TOKEN } from './actionTypes';
 import { uiStartLoading, uiStopLoading } from './index';
 import startMainTabs from '../../screens/MainTabs/startMainTabs';
+import App from "../../../App";
 
 const API_KEY = "AIzaSyBaaqojXpes4XTJ7x-zcU77uz-xw1rQCrw";
 
@@ -43,25 +44,27 @@ export const tryAuth = (authData, authMode) => {
 
 export const authStoreToken = (token, expiresIn, refreshToken) => {
   return dispatch => {
-    dispatch(authSetToken(token));
     const now = new Date();
     const expiryDate = now.getTime() + expiresIn * 1000;
+    dispatch(authSetToken(token, expiryDate));
     AsyncStorage.setItem("ap:auth:expiryDate", expiryDate.toString());
     AsyncStorage.setItem("ap:auth:token", token);
     AsyncStorage.setItem("ap:auth:refreshToken", refreshToken);
   }
 };
 
-export const authSetToken = token => ({
+export const authSetToken = (token, expiryDate) => ({
   type: AUTH_SET_TOKEN,
-  token
+  token,
+  expiryDate
 });
 
 export const authGetToken = () => {
   return (dispatch, getState) => {
     const promise = new Promise((resolve, reject) => {
       const token = getState().auth.token;
-      if (!token) {
+      const expiryDate = getState().auth.expiryDate;
+      if (!token || new Date(expiryDate) <= new Date()) {
         let fetchedToken;
         AsyncStorage.getItem("ap:auth:token")
           .catch(err => reject())
@@ -133,5 +136,20 @@ export const authClearStore = () => {
   return dispatch => {
     AsyncStorage.removeItem("ap:auth:token");
     AsyncStorage.removeItem("ap:auth:expiryDate");
+    return AsyncStorage.removeItem("ap:auth:refreshToken");
   }
 };
+
+export const authLogout = () => {
+  return dispatch => {
+    dispatch(authClearStore())
+      .then(() => {
+        App();
+      });
+    dispatch(authRemoveToken);
+  };
+};
+
+export const authRemoveToken = () => ({
+  type: AUTH_REMOVE_TOKEN
+});
