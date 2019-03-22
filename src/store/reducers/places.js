@@ -1,7 +1,8 @@
-import { REMOVE_PLACE, SET_PLACES } from '../actions/actionTypes';
+import { REMOVE_PLACE, SET_PLACES, PLACE_ADDED, START_ADD_PACLE } from '../actions/actionTypes';
 
 const initialState = {
   places: [],
+  placeAdded: false
 };
 
 const reducer = (state = initialState, action) => {
@@ -20,6 +21,17 @@ const reducer = (state = initialState, action) => {
         ),
       };
 
+    case PLACE_ADDED:
+      return {
+        ...state,
+        placeAdded: true,
+      }
+
+    case START_ADD_PACLE:
+      return {
+        ...state,
+        placeAdded: false,
+      }
     default:
       return state;
   }

@@ -1,5 +1,9 @@
-import { SET_PLACES, REMOVE_PLACE } from './actionTypes';
+import { SET_PLACES, REMOVE_PLACE, PLACE_ADDED, START_ADD_PACLE } from './actionTypes';
 import { uiStartLoading, uiStopLoading, authGetToken } from './index';
+
+export const startAddPlace = () => ({
+  type: START_ADD_PACLE,
+});
 
 export const addPlace = (placeName, location, image) => {
   return dispatch => {
@@ -26,7 +30,13 @@ export const addPlace = (placeName, location, image) => {
         alert("Something went wrong, please try again!");
         dispatch(uiStopLoading());
       })
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw (new Error());
+        }
+      })
       .then(parsedRes => {
         const placeData = {
           name: placeName,
@@ -38,10 +48,18 @@ export const addPlace = (placeName, location, image) => {
           body: JSON.stringify(placeData)
         });
       })
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw (new Error());
+        }
+      })
       .then(parsedRes => {
+        console.log(parsedRes);
         alert("Added a place ;)");
         dispatch(uiStopLoading());
+        dispatch(placeAdded());
       })
       .catch(err => {
         console.log(err);
@@ -50,6 +68,10 @@ export const addPlace = (placeName, location, image) => {
       });
   };
 };
+
+export const placeAdded = () => ({
+  type: PLACE_ADDED
+});
 
 export const getPlaces = () => {
   return dispatch => {
@@ -60,7 +82,13 @@ export const getPlaces = () => {
       .then(token => {
         return fetch("https://rn-course-1552502528388.firebaseio.com/places.json?auth=" + token)
       })
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw (new Error());
+        }
+      })
       .then(parsedRes => {
         const places = [];
         for(let key in parsedRes) {
@@ -99,7 +127,13 @@ export const deletePlace = key => {
         })
 
       })
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw (new Error());
+        }
+      })
       .then(parsedRes => {
         console.log("Done!");
       })

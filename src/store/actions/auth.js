@@ -22,7 +22,13 @@ export const tryAuth = (authData, authMode) => {
         "Content-Type": "application/json"
       }
     })
-      .then(res => res.json())
+      .then(res => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          throw (new Error());
+        }
+      })
       .then(parsedRes => {
         dispatch(uiStopLoading());
         console.log(parsedRes);

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 
-import { addPlace } from '../../store/actions/index';
+import { addPlace, startAddPlace } from '../../store/actions/index';
 import DefaultInput from '../../components/UI/DefaultInput';
 import PlaceInput from '../../components/PlaceInput/PlaceInput';
 import MainText from '../../components/UI/MainText';
@@ -42,7 +42,17 @@ class SharePlaceScreen extends Component {
     };
   };
 
+  componentDidUpdate() {
+    if(this.props.placeAdded){
+      this.props.navigator.switchToTab({ tabIndex: 0 });
+    }
+  };
+
   onNavigatorEvent = event => {
+    if (event.type === "ScreenChangedEvent" && event.id === "willAppear") {
+      this.props.onStartAddPlace();
+    }
+
     if (event.type === "NavBarButtonPress") {
       if (event.id === "sideDrawerToggle") {
         this.props.navigator.toggleDrawer({
@@ -77,7 +87,7 @@ class SharePlaceScreen extends Component {
         }
       }
     }));
-  }
+  };
 
   imagePickedHandler = image => {
     this.setState(prevState => ({
@@ -89,12 +99,38 @@ class SharePlaceScreen extends Component {
         }
       }
     }))
-  }
+  };
 
   placeAddedHandler = () => {
     const { controls: { placeName, location, image } } = this.state;
 
     this.props.onAddPlace(placeName.value, location.value, image.value);
+    this.reset();
+    this.imagePicker.reset();
+    this.locationPicker.reset();
+  };
+
+  reset = () => {
+    this.setState({
+      controls: {
+        placeName: {
+          value: '',
+          valid: false,
+          touched: false,
+          validationRules: {
+            notEmpty: true
+          },
+        },
+        location: {
+          value: null,
+          valid: false,
+        },
+        image: {
+          value: null,
+          valid: false,
+        }
+      },
+    })
   };
 
   render () {
@@ -106,8 +142,8 @@ class SharePlaceScreen extends Component {
           <MainText>
             <HeadingText>Share a Place with us!</HeadingText>
           </MainText>
-          <PickImage onImagePicked={this.imagePickedHandler} />
-          <PickLocation onLocationPick={this.locationPickedHandler} />
+          <PickImage onImagePicked={this.imagePickedHandler} ref={ref => (this.imagePicker = ref)}/>
+          <PickLocation onLocationPick={this.locationPickedHandler} ref={ref => (this.locationPicker = ref)}/>
           <PlaceInput
             onChangeText={this.placeNameChangedHandler}
             placeData={controls.placeName}
@@ -152,11 +188,13 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = dispatch => ({
-  onAddPlace: (placeName, location, image) => dispatch(addPlace(placeName, location, image))
+  onAddPlace: (placeName, location, image) => dispatch(addPlace(placeName, location, image)),
+  onStartAddPlace: () => dispatch(startAddPlace()),
 });
 
 const mapStateToProps = state => ({
-  isLoading: state.ui.isLoading
+  isLoading: state.ui.isLoading,
+  placeAdded: state.places.placeAdded,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SharePlaceScreen);
