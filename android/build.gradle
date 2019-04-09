@@ -8,6 +8,7 @@ buildscript {
         supportLibVersion = "27.0.0"
         googlePlayServicesVersion = "11.8.0"
         androidMapsUtilsVersion = "0.5+"
+        buildToolsVersion = "27.0.0"
     }
     repositories {
         google()
@@ -37,4 +38,15 @@ allprojects {
 task wrapper(type: Wrapper) {
     gradleVersion = '4.7'
     distributionUrl = distributionUrl.replace("bin", "all")
+}
+
+subprojects {
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                buildToolsVersion rootProject.ext.buildToolsVersion
+            }
+        }
+    }
 }
